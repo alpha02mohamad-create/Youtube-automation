@@ -1,0 +1,7 @@
+google-generativeai
+edge-tts
+mutagen
+requests
+google-auth
+google-api-python-client
+pytrends
