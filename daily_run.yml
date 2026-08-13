@@ -1,0 +1,43 @@
+name: AI Shorts Factory - Daily Run
+
+on:
+  schedule:
+    # 4 مرات باليوم بتوقيت UTC — عدّل حسب حصة يوتيوب اليومية (10,000 وحدة = أقصى 6 رفعات)
+    - cron: "0 12 * * *"
+    - cron: "0 15 * * *"
+    - cron: "0 18 * * *"
+    - cron: "0 21 * * *"
+  workflow_dispatch: {}  # يسمح بتشغيل يدوي من تبويب Actions
+
+jobs:
+  produce-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run video production pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS }}
+        run: python main.py
+
+      - name: Commit updated history
+        run: |
+          git config user.name "ai-shorts-factory-bot"
+          git config user.email "actions@github.com"
+          git add history/
+          git diff --staged --quiet || git commit -m "chore: update published history [skip ci]"
+          git push
