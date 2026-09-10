@@ -12,6 +12,7 @@ jobs:
   produce-and-publish:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,6 +32,8 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS }}
+          FLUX_API_KEY: ${{ secrets.FLUX_API_KEY }}
+          FLUX_API_ID: ${{ secrets.FLUX_API_ID }}
         run: python main.py
 
       - name: Commit updated history
